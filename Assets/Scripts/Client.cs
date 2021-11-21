@@ -35,7 +35,7 @@ public class Client : MonoBehaviour
       udp = new UDP();
    }
 
-   public void ConnectedToServer()
+   public void ConnectToServer()
    {
       InitializeClientData();
       tcp.Connect();
@@ -232,7 +232,8 @@ public class Client : MonoBehaviour
    private void InitializeClientData()
    {
       packetHandlers = new Dictionary<int, PacketHandler>() {
-         { (int)ServerPackets.welcome, ClientHandle.Welcome }
+         { (int)ServerPackets.welcome, ClientHandle.Welcome },
+         { (int)ServerPackets.udpTest, ClientHandle.UDPTest }
       };
       Debug.Log("Initialize client data.");
    }

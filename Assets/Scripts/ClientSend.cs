@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -23,6 +24,16 @@ public class ClientSend : MonoBehaviour
          packet.Write(UIManager.instance.usernameField.text);
 
          SendTCPData(packet);
+      }
+   }
+
+   internal static void UDPTestReceived()
+   {
+      using (Packet packet = new Packet((int)ClientPackets.udpTestReceived)) {
+
+         packet.Write("This is a message to the server.");
+
+         SendUDPData(packet);
       }
    }
 }
