@@ -74,6 +74,21 @@ public class Client : MonoBehaviour
          stream.BeginRead(receiveBuffer, 0, dataBufferSize, ReceiveCallback, null);
       }
 
+      public void SendData(Packet packet)
+      {
+         try {
+
+            if (socket != null) {
+               stream.BeginWrite(packet.ToArray(), 0, packet.Length(), null, null);
+            }
+
+
+         } catch(Exception ex) {
+
+            Debug.Log($"Error sending data to server via TCP: {ex.Message}");
+         }
+      }
+
       private void ReceiveCallback(IAsyncResult result)
       {
          try {
@@ -114,6 +129,7 @@ public class Client : MonoBehaviour
             byte[] packetBytes = receivedData.ReadBytes(packetLength);
             ThreadManager.ExecuteOnMainThread(() => {
                using(Packet packet = new Packet(packetBytes)) {
+
                   int packetId = packet.ReadInt();
                   packetHandlers[packetId](packet);
                }
