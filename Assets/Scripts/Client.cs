@@ -14,6 +14,7 @@ public class Client : MonoBehaviour
    public int port = 26950;
 
    public TCP tcp;
+   public UDP udp;
    internal int myId = 0;
 
    private delegate void PacketHandler(Packet packet);
@@ -31,6 +32,7 @@ public class Client : MonoBehaviour
    private void Start()
    {
       tcp = new TCP();
+      udp = new UDP();
    }
 
    public void ConnectedToServer()
@@ -150,6 +152,80 @@ public class Client : MonoBehaviour
          }
 
          return false;
+      }
+   }
+
+   public class UDP
+   {
+      public UdpClient socket;
+      public IPEndPoint endPoint;
+
+      public UDP()
+      {
+         endPoint = new IPEndPoint(IPAddress.Parse(instance.ip), instance.port);
+      }
+
+      public void Connect(int localPort)
+      {
+         socket = new UdpClient(localPort);
+
+         socket.Connect(endPoint);
+         socket.BeginReceive(ReceiveCallback, null);
+
+         using (Packet packet = new Packet()) {
+            SendData(packet);
+         }
+      }
+
+      public void SendData(Packet packet)
+      {
+         try {
+
+            packet.InsertInt(instance.myId);
+            if (socket != null) {
+               socket.BeginSend(packet.ToArray(), packet.Length(), null, null);
+            }
+
+         } catch(Exception ex) {
+
+            Debug.Log($"Error sendint data to server via UDP: {ex.Message}");
+         }
+      }
+
+      public void ReceiveCallback(IAsyncResult result)
+      {
+         try {
+
+            byte[] data = socket.EndReceive(result, ref endPoint);
+            socket.BeginReceive(ReceiveCallback, null);
+
+            if (data.Length < 4) {
+               // TODO: disconnect?
+               return;
+            }
+
+            HandleData(data);
+
+         } catch(Exception ex) {
+
+            // todo: disconnect.
+         }
+      }
+
+      private void HandleData(byte[] data)
+      {
+         using (Packet packet = new Packet(data)) {
+
+            int packetLength = packet.ReadInt();
+            data = packet.ReadBytes(packetLength);
+         }
+
+         ThreadManager.ExecuteOnMainThread(() => {
+            using(Packet packet = new Packet(data)) {
+               int packetId = packet.ReadInt();
+               packetHandlers[packetId](packet);
+            }
+         });
       }
    }
 
