@@ -129,6 +129,7 @@ public class Client : MonoBehaviour
 
          while (packetLength > 0 && packetLength <= receivedData.UnreadLength()) {
             byte[] packetBytes = receivedData.ReadBytes(packetLength);
+
             ThreadManager.ExecuteOnMainThread(() => {
                using(Packet packet = new Packet(packetBytes)) {
 
@@ -233,7 +234,8 @@ public class Client : MonoBehaviour
    {
       packetHandlers = new Dictionary<int, PacketHandler>() {
          { (int)ServerPackets.welcome, ClientHandle.Welcome },
-         { (int)ServerPackets.udpTest, ClientHandle.UDPTest }
+         { (int)ServerPackets.spawnPlayer, ClientHandle.SpawnPlayer },
+         //{ (int)ServerPackets.udpTest, ClientHandle.UDPTest }
       };
       Debug.Log("Initialize client data.");
    }

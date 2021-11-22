@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class ClientHandle : MonoBehaviour
 {
-    public static void Welcome(Packet packet)
+   public static void Welcome(Packet packet)
    {
       string message = packet.ReadString();
       int myId = packet.ReadInt();
@@ -18,11 +18,21 @@ public class ClientHandle : MonoBehaviour
       Client.instance.udp.Connect(((IPEndPoint)Client.instance.tcp.socket.Client.LocalEndPoint).Port);
    }
 
-   internal static void UDPTest(Packet packet)
+   public static void SpawnPlayer(Packet packet)
    {
-      string message = packet.ReadString();
+      int id = packet.ReadInt();
+      string username = packet.ReadString();
+      Vector3 position = packet.ReadVector3();
+      Quaternion rotation = packet.ReadQuaternion();
 
-      Debug.Log($"Message UDP from server: {message}");
-      ClientSend.UDPTestReceived();
+      GameManager.instance.SpawnPlayer(id, username, position, rotation);
    }
+
+   //internal static void UDPTest(Packet packet)
+   //{
+   //   string message = packet.ReadString();
+
+   //   Debug.Log($"Message UDP from server: {message}");
+   //   ClientSend.UDPTestReceived();
+   //}
 }

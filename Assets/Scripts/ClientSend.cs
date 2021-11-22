@@ -27,13 +27,13 @@ public class ClientSend : MonoBehaviour
       }
    }
 
-   internal static void UDPTestReceived()
-   {
-      using (Packet packet = new Packet((int)ClientPackets.udpTestReceived)) {
+   //internal static void UDPTestReceived()
+   //{
+   //   using (Packet packet = new Packet((int)ClientPackets.udpTestReceived)) {
 
-         packet.Write("This is a message to the server.");
+   //      packet.Write("This is a message to the server.");
 
-         SendUDPData(packet);
-      }
-   }
+   //      SendUDPData(packet);
+   //   }
+   //}
 }
